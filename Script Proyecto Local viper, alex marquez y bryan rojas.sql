@@ -284,16 +284,61 @@ WHERE ID_Distribuidor = (SELECT ID_Distribuidor FROM distribuidores WHERE ID_Dis
 delete from bebidas_energizante where ID_Energizante = (select ID_distribuidor from distribuidores where ID_distribuidor = '5');
 delete from bebidas_energizante where ID_Energizante = (select ID_distribuidor from distribuidores where ID_distribuidor = '1');
 
-DELIMITER $$
 
-DELIMITER $$
+DELIMITER //
 
-CREATE FUNCTION `precios_function` (ID_Energizante INT, ID_distribuidor INT)
-RETURNS INT
+CREATE FUNCTION obtener_precio_bebida(marca_bebida VARCHAR(100))
+RETURNS DECIMAL(10, 2)
 DETERMINISTIC
-READS SQL DATA
 BEGIN
-    RETURN ID_Distribuidor;
-END$$
+    DECLARE precio DECIMAL(10, 2);
+
+    SELECT Precios INTO precio
+    FROM bebidas_energizante
+    WHERE Marcas = marca_bebida
+    LIMIT 1;
+    RETURN precio;
+END //
 
 DELIMITER ;
+
+
+
+
+
+
+
+DELIMITER //
+
+CREATE FUNCTION obtener_precio_y_distribuidor(marca_bebida VARCHAR(100), id_local INT)
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+    DECLARE precio DECIMAL(10, 2);
+    DECLARE id_distribuidor INT;
+    DECLARE resultado VARCHAR(255);
+
+    SELECT Precios INTO precio
+    FROM bebidas_energizante
+    WHERE Marcas = marca_bebida
+    LIMIT 1;
+
+    SELECT d.ID_distribuidor INTO id_distribuidor
+    FROM distribuidores d
+    JOIN bebidas_energizante b ON d.ID_distribuidor = b.ID_distribuidor
+    WHERE b.Marcas = marca_bebida
+    AND d.ID_local = id_local
+    LIMIT 1;
+
+    SET resultado = CONCAT('Precio: ', COALESCE(precio, 'No disponible'), ', ID Distribuidor: ', COALESCE(id_distribuidor, 'No disponible'));
+
+    RETURN resultado;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
