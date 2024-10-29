@@ -285,6 +285,7 @@ delete from bebidas_energizante where ID_Energizante = (select ID_distribuidor f
 delete from bebidas_energizante where ID_Energizante = (select ID_distribuidor from distribuidores where ID_distribuidor = '1');
 
 
+
 DELIMITER //
 
 CREATE FUNCTION obtener_precio_bebida(marca_bebida VARCHAR(100))
@@ -301,7 +302,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
 
 
 DELIMITER //
@@ -333,28 +333,19 @@ END //
 
 DELIMITER ;
 
-
-
-
-DROP PROCEDURE IF EXISTS primeras_bebidas;
-
+DROP PROCEDURE IF EXISTS buscar_filas_bebidas;
 DELIMITER $$
-
-CREATE PROCEDURE primeras_bebidas (IN cantidad_filas INT)
+CREATE PROCEDURE buscar_filas_bebidas (IN cantidad_filas INT)
 BEGIN
     SELECT * FROM bebidas_energizante LIMIT cantidad_filas;
 END $$
-
 DELIMITER ;
 
-call proyecto_bebidas.primeras_bebidas(2);
-
-
+call proyecto_bebidas.buscar_filas_bebidas(2);
 
 DROP PROCEDURE IF EXISTS insertar_bebida;
 
 DELIMITER $$
-
 CREATE PROCEDURE insertar_bebida(
     IN id_energizante INT,                -- ID de la bebida
     IN marca VARCHAR(100),                -- Nombre de la bebida
@@ -367,58 +358,69 @@ CREATE PROCEDURE insertar_bebida(
 )
 BEGIN
     DECLARE cantidad INT;
-
     SELECT COUNT(*) INTO cantidad
     FROM bebidas_energizante
     WHERE Marcas = marca;
-
     IF cantidad = 0 THEN
         INSERT INTO bebidas_energizante (ID_Energizante, Marcas, Precios, stock_lote, ID_Distribuidor, Gustos, Fecha_de_vencimientos, ID_Local)
         VALUES (id_energizante, marca, precio, stock, id_distribuidor, gustos, fecha_vencimiento, id_local);
     END IF;
     SELECT * FROM bebidas_energizante;
 END $$
-
 DELIMITER ;
 
 CALL insertar_bebida(10, 'Prime', 2000.00, 20, 5, 'Limón', '2025-12-12', 1);
 
-
+DROP PROCEDURE IF EXISTS eliminar_full_bebidas;
 
 DELIMITER $$
 
-CREATE PROCEDURE eliminar_bebida(
-    IN id_energizante INT                     -- ID de la bebida a eliminar
+CREATE PROCEDURE eliminar_full_bebidas(
+    IN ID_Energizante INT                     -- ID de la bebida a eliminar
 )
 BEGIN
     -- Verificar si la bebida existe
     DECLARE cantidad INT;
-
     SELECT COUNT(*) INTO cantidad
     FROM bebidas_energizante
-    WHERE ID_Energizante = id_energizante;
-
-    IF cantidad > 0 THEN
+    WHERE ID_Energizante = ID_Energizante;
+    IF cantidad > 10 THEN
         -- Eliminar la bebida si existe
         DELETE FROM bebidas_energizante
-        WHERE ID_Energizante = id_energizante;
+        WHERE ID_Energizante = ID_Energizante;
         
         SELECT 'La bebida ha sido eliminada.' AS Mensaje;
     ELSE
         SELECT 'No se encontró la bebida con ese ID.' AS Mensaje;
     END IF;
-
     -- Seleccionar todas las bebidas para verificar la eliminación
     SELECT * FROM bebidas_energizante;
+END $$
+DELIMITER ;
+
+CALL eliminar_full_bebidas(1);
+
+DROP PROCEDURE IF EXISTS actualizar_full_stock;
+
+DELIMITER $$
+
+CREATE PROCEDURE actualizar_full_stock(
+    IN ID_Energizante INT,                     -- ID del producto a actualizar
+    IN nuevo_stock INT                       -- Nuevo valor de stock
+)
+BEGIN
+    -- Actualizar el stock del producto
+    UPDATE bebidas_energizante
+    SET stock_lote = nuevo_stock
+    WHERE id_energizante = ID_Energizante;
+
+    -- Mensaje de confirmación
+    SELECT 'Stock actualizado con éxito.' AS Mensaje;
+    
+    -- Opcional: Seleccionar el producto actualizado para verificar el cambio
+    SELECT * FROM bebidas_energizante WHERE id_energizante = ID_Energizante;
 END $$
 
 DELIMITER ;
 
-
-
-
-
-
-
-
-
+CALL actualizar_full_stock(1,80);
