@@ -304,10 +304,6 @@ DELIMITER ;
 
 
 
-
-
-
-
 DELIMITER //
 
 CREATE FUNCTION obtener_precio_y_distribuidor(marca_bebida VARCHAR(100), id_local INT)
@@ -336,6 +332,90 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
+DROP PROCEDURE IF EXISTS primeras_bebidas;
+
+DELIMITER $$
+
+CREATE PROCEDURE primeras_bebidas (IN cantidad_filas INT)
+BEGIN
+    SELECT * FROM bebidas_energizante LIMIT cantidad_filas;
+END $$
+
+DELIMITER ;
+
+call proyecto_bebidas.primeras_bebidas(2);
+
+
+
+DROP PROCEDURE IF EXISTS insertar_bebida;
+
+DELIMITER $$
+
+CREATE PROCEDURE insertar_bebida(
+    IN id_energizante INT,                -- ID de la bebida
+    IN marca VARCHAR(100),                -- Nombre de la bebida
+    IN precio DECIMAL(10, 2),             -- Precio de la bebida
+    IN stock INT,                         -- Stock de la bebida
+    IN id_distribuidor INT,               -- ID del distribuidor
+    IN gustos VARCHAR(100),               -- Gustos de la bebida
+    IN fecha_vencimiento DATE,            -- Fecha de vencimiento
+    IN id_local INT                       -- ID del local
+)
+BEGIN
+    DECLARE cantidad INT;
+
+    SELECT COUNT(*) INTO cantidad
+    FROM bebidas_energizante
+    WHERE Marcas = marca;
+
+    IF cantidad = 0 THEN
+        INSERT INTO bebidas_energizante (ID_Energizante, Marcas, Precios, stock_lote, ID_Distribuidor, Gustos, Fecha_de_vencimientos, ID_Local)
+        VALUES (id_energizante, marca, precio, stock, id_distribuidor, gustos, fecha_vencimiento, id_local);
+    END IF;
+    SELECT * FROM bebidas_energizante;
+END $$
+
+DELIMITER ;
+
+CALL insertar_bebida(10, 'Prime', 2000.00, 20, 5, 'Limón', '2025-12-12', 1);
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_bebida(
+    IN id_energizante INT                     -- ID de la bebida a eliminar
+)
+BEGIN
+    -- Verificar si la bebida existe
+    DECLARE cantidad INT;
+
+    SELECT COUNT(*) INTO cantidad
+    FROM bebidas_energizante
+    WHERE ID_Energizante = id_energizante;
+
+    IF cantidad > 0 THEN
+        -- Eliminar la bebida si existe
+        DELETE FROM bebidas_energizante
+        WHERE ID_Energizante = id_energizante;
+        
+        SELECT 'La bebida ha sido eliminada.' AS Mensaje;
+    ELSE
+        SELECT 'No se encontró la bebida con ese ID.' AS Mensaje;
+    END IF;
+
+    -- Seleccionar todas las bebidas para verificar la eliminación
+    SELECT * FROM bebidas_energizante;
+END $$
+
+DELIMITER ;
+
+
+
 
 
 
