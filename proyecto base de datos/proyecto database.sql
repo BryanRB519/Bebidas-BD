@@ -1,0 +1,1 @@
+SELECT * FROM proyecto_bebidas.local_viper;

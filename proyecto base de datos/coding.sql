@@ -1,0 +1,1 @@
+SELECT * FROM proyecto_bebidas.`insersion de datos`;
