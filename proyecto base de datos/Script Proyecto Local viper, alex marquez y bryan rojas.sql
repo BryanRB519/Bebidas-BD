@@ -150,11 +150,16 @@ foreign key (ID_local) references Local_Viper(ID_local) on update cascade on del
 
 CREATE TABLE log_informacion_aguas_de_saborez (
 ID_log INT PRIMARY KEY auto_increment,
+ID_Jugos int not null,
 Marcas VARCHAR(30),
 Gustos VARCHAR(30),
+ID_Distribuidor int,
 Precios INT,
-fecha_hora DATETIME,
+Fecha_de_vencimientos int,
+Embase_por_litro int,
+stock_lote int,
 ID_local int,
+fecha_hora DATETIME,
 foreign key (ID_local) references Local_Viper(ID_local) on update cascade on delete cascade
 );
 
@@ -435,31 +440,28 @@ DELIMITER ;
 
 CALL actualizar_full_stock(1,80);
 
-DELIMITER $$
+CREATE TABLE Auditoria_Agua_Saborizadas (
+    ID_Auditoria INT PRIMARY KEY AUTO_INCREMENT,
+    ID_Jugos INT,
+    Marcas VARCHAR(20),
+    Gustos VARCHAR(20),
+    ID_Distribuidor INT,
+    Precios INT,
+    Fecha_de_vencimientos VARCHAR(20),
+    Embase_por_litro VARCHAR(20),
+    stock_lote INT,
+    ID_local INT,
+    Operacion ENUM('INSERT', 'UPDATE', 'DELETE'),
+    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Usuario VARCHAR(50) -- Puedes almacenar el nombre del usuario que realiza la operación, si es necesario
+);
 
-CREATE TRIGGER
-`registros_jugos`
-AFTER INSERT ON ``
-FOR EACH ROW
-INSERT INTO `movimientos_general`
-(id_movimiento, fecha, usuario_id,
-id, precio_costo, precio_venta,
-tipo_operacion)
-VALUES
-(NULL, NOW(), SESSION_USER(), NEW.id,
-NEW.precio_compra, NEW.precio,
-INSERT: Se insertó un nuevo registro
-en la tabla PRODUCTOS.’)
-
-DELIMITER ;
-
-DROP TRIGGER IF EXISTS log_informacion_aguas_de_saborez;
-CREATE TRIGGER log_informacion_aguas_de_saborez
+DROP trigger IF EXISTS trg_Agua_Saborizadas_Insert;
+CREATE TRIGGER trg_Agua_Saborizadas_Insert
 AFTER INSERT ON agua_saborizadas
 FOR EACH ROW
-INSERT INTO log_informacion_aguas_de_saborez VALUES (DEFAULT, new.Marcas, new.Gustos, new.Precios, new.ID_local, user(), now(), 'INSERT: Se insertó un nuevo registro
-en la tabla PRODUCTOS.');
+INSERT INTO auditoria_agua_saborizadas (ID_Jugos, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local, Operacion)
+VALUES (NEW.ID_Jugos, NEW.Marcas, NEW.Gustos, NEW.ID_Distribuidor, NEW.Precios, NEW.Fecha_de_vencimientos, NEW.Embase_por_litro, NEW.stock_lote, NEW.ID_local, 'INSERT');
 
-INSERT INTO agua_saborizadas(ID_Jugos, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local)
-VALUES
-('9', 'baggio', 'uva', '1', '1500', '2026-11-24', '1-L', '28', '1');
+INSERT INTO Agua_Saborizadas (ID_Jugos, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local)
+VALUES ('9', 'MarcaX', 'Limón', 1, 150, '2024-12-31', '1.5L', 100, 1);

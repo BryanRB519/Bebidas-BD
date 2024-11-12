@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `proyecto_bebidas` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `proyecto_bebidas`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: proyecto_bebidas
@@ -78,8 +76,43 @@ CREATE TABLE `agua_saborizadas` (
 
 LOCK TABLES `agua_saborizadas` WRITE;
 /*!40000 ALTER TABLE `agua_saborizadas` DISABLE KEYS */;
-INSERT INTO `agua_saborizadas` VALUES (1,'placer','manzana',3,1400,'2026','1,5-L',47,1),(2,'baggio','multifruti',1,3000,'2026','2-L',100,1),(3,'ades','pera',2,2500,'2026','1-L',57,1),(4,'cepita','naranja',4,2000,'2026','1,5-L',29,1),(5,'tutti','frutilla',5,1200,'2026','1-L',10,1),(6,'baggio','manzana',1,3000,'2026','2-L',43,1),(7,'baggio','multifruta',1,1500,'2026-11-24','1-L',23,1),(8,'baggio','pera',2,3000,'2026-11-25','1-L',40,1);
+INSERT INTO `agua_saborizadas` VALUES (1,'placer','manzana',3,1400,'2026','1,5-L',47,1),(2,'baggio','multifruti',1,3000,'2026','2-L',100,1),(3,'ades','pera',2,2500,'2026','1-L',57,1),(4,'cepita','naranja',4,2000,'2026','1,5-L',29,1),(5,'tutti','frutilla',5,1200,'2026','1-L',10,1),(6,'baggio','manzana',1,3000,'2026','2-L',43,1),(7,'baggio','multifruta',1,1500,'2026-11-24','1-L',23,1),(8,'baggio','pera',2,3000,'2026-11-25','1-L',40,1),(9,'MarcaX','Limón',1,150,'2024-12-31','1.5L',100,1);
 /*!40000 ALTER TABLE `agua_saborizadas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auditoria_agua_saborizadas`
+--
+
+DROP TABLE IF EXISTS `auditoria_agua_saborizadas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auditoria_agua_saborizadas` (
+  `ID_Auditoria` int NOT NULL AUTO_INCREMENT,
+  `ID_Jugos` int DEFAULT NULL,
+  `Marcas` varchar(20) DEFAULT NULL,
+  `Gustos` varchar(20) DEFAULT NULL,
+  `ID_Distribuidor` int DEFAULT NULL,
+  `Precios` int DEFAULT NULL,
+  `Fecha_de_vencimientos` varchar(20) DEFAULT NULL,
+  `Embase_por_litro` varchar(20) DEFAULT NULL,
+  `stock_lote` int DEFAULT NULL,
+  `ID_local` int DEFAULT NULL,
+  `Operacion` enum('INSERT','UPDATE','DELETE') DEFAULT NULL,
+  `Fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `Usuario` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`ID_Auditoria`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auditoria_agua_saborizadas`
+--
+
+LOCK TABLES `auditoria_agua_saborizadas` WRITE;
+/*!40000 ALTER TABLE `auditoria_agua_saborizadas` DISABLE KEYS */;
+INSERT INTO `auditoria_agua_saborizadas` VALUES (1,9,'MarcaX','Limón',1,150,'2024-12-31','1.5L',100,1,'INSERT','2024-11-12 18:19:48',NULL);
+/*!40000 ALTER TABLE `auditoria_agua_saborizadas` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -386,35 +419,6 @@ INSERT INTO `localidades` VALUES (1,'matanza',1,1),(2,'san francisco',2,NULL),(3
 UNLOCK TABLES;
 
 --
--- Table structure for table `log_informacion_aguas_de_saborez`
---
-
-DROP TABLE IF EXISTS `log_informacion_aguas_de_saborez`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `log_informacion_aguas_de_saborez` (
-  `ID_log` int NOT NULL AUTO_INCREMENT,
-  `Marcas` varchar(30) DEFAULT NULL,
-  `Gustos` varchar(30) DEFAULT NULL,
-  `Precios` int DEFAULT NULL,
-  `fecha_hora` datetime DEFAULT NULL,
-  `ID_local` int DEFAULT NULL,
-  PRIMARY KEY (`ID_log`),
-  KEY `ID_local` (`ID_local`),
-  CONSTRAINT `log_informacion_aguas_de_saborez_ibfk_1` FOREIGN KEY (`ID_local`) REFERENCES `local_viper` (`ID_local`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `log_informacion_aguas_de_saborez`
---
-
-LOCK TABLES `log_informacion_aguas_de_saborez` WRITE;
-/*!40000 ALTER TABLE `log_informacion_aguas_de_saborez` DISABLE KEYS */;
-/*!40000 ALTER TABLE `log_informacion_aguas_de_saborez` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Temporary view structure for view `manaos_info`
 --
 
@@ -588,4 +592,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-31 16:34:55
+-- Dump completed on 2024-11-12 16:17:55
