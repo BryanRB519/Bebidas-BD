@@ -1,5 +1,5 @@
-#desactiva el modo seguro lpm porq si no, no funciona estimado cliente besitos mua mua
-SET SQL_SAFE_UPDATES= 0;
+-- buenos dias, tardes o noches estimado cliente le notifico principalmente que cada que entre ejecute el siguiente codigo para hacer funcionar ciertos comandos a futuro
+SET SQL_SAFE_UPDATES= 0; -- esto desactivara el modo seguro de SQL para poder ejecutar ciertos delete y update 
 
 create database proyecto_bebidas;
 
@@ -148,19 +148,38 @@ ID_local int(20),
 foreign key (ID_local) references Local_Viper(ID_local) on update cascade on delete cascade
 );
 
-CREATE TABLE log_informacion_aguas_de_saborez (
-ID_log INT PRIMARY KEY auto_increment,
-ID_Jugos int not null,
-Marcas VARCHAR(30),
-Gustos VARCHAR(30),
-ID_Distribuidor int,
-Precios INT,
-Fecha_de_vencimientos int,
-Embase_por_litro int,
-stock_lote int,
-ID_local int,
-fecha_hora DATETIME,
-foreign key (ID_local) references Local_Viper(ID_local) on update cascade on delete cascade
+
+-- ahora creamos la tabla auditora que nos servira mas tarde cuando estemos mas avanzados en el proyecto
+CREATE TABLE Auditoria_Agua_Saborizadas (
+    ID_Auditoria INT PRIMARY KEY AUTO_INCREMENT,
+    ID_Jugos INT,
+    Marcas VARCHAR(20),
+    Gustos VARCHAR(20),
+    ID_Distribuidor INT,
+    Precios INT,
+    Fecha_de_vencimientos VARCHAR(20),
+    Embase_por_litro VARCHAR(20),
+    stock_lote INT,
+    ID_local INT,
+    Operacion ENUM('INSERT', 'UPDATE', 'DELETE'),
+    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Usuario VARCHAR(50) -- Puedes almacenar el nombre del usuario que realiza la operación, si es necesario
+);
+
+CREATE TABLE Auditoria_gaseosas (
+    ID_Auditoria INT PRIMARY KEY AUTO_INCREMENT,
+    ID_Gaseosas INT,
+    Marcas VARCHAR(20),
+    Gustos VARCHAR(20),
+    ID_Distribuidor INT,
+    Precios INT,
+    Fecha_de_vencimientos VARCHAR(20),
+    Embase_por_litro VARCHAR(20),
+    stock_lote INT,
+    ID_local INT,
+    Operacion ENUM('INSERT', 'UPDATE', 'DELETE'),
+    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Usuario VARCHAR(50) -- Puedes almacenar el nombre del usuario que realiza la operación, si es necesario
 );
 
 INSERT INTO local_viper(ID_local, ID_Gaseosas, ID_agua, ID_Jugo, ID_Alcohol, ID_Energizante, ID_Ventas, ID_Productos, ID_Clientes, Direccion, Nombre_Local)
@@ -440,21 +459,12 @@ DELIMITER ;
 
 CALL actualizar_full_stock(1,80);
 
-CREATE TABLE Auditoria_Agua_Saborizadas (
-    ID_Auditoria INT PRIMARY KEY AUTO_INCREMENT,
-    ID_Jugos INT,
-    Marcas VARCHAR(20),
-    Gustos VARCHAR(20),
-    ID_Distribuidor INT,
-    Precios INT,
-    Fecha_de_vencimientos VARCHAR(20),
-    Embase_por_litro VARCHAR(20),
-    stock_lote INT,
-    ID_local INT,
-    Operacion ENUM('INSERT', 'UPDATE', 'DELETE'),
-    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Usuario VARCHAR(50) -- Puedes almacenar el nombre del usuario que realiza la operación, si es necesario
-);
+DROP trigger IF EXISTS trg_gaseosas_Insert;
+CREATE TRIGGER trg_gaseosas_Insert
+AFTER INSERT ON gaseosas
+FOR EACH ROW
+INSERT INTO auditoria_gaseosas (ID_Gaseosas, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local, Operacion)
+VALUES (NEW.ID_Gaseosas, NEW.Marcas, NEW.Gustos, NEW.ID_Distribuidor, NEW.Precios, NEW.Fecha_de_vencimientos, NEW.Embase_por_litro, NEW.stock_lote, NEW.ID_local, 'INSERT');
 
 DROP trigger IF EXISTS trg_Agua_Saborizadas_Insert;
 CREATE TRIGGER trg_Agua_Saborizadas_Insert
@@ -463,5 +473,11 @@ FOR EACH ROW
 INSERT INTO auditoria_agua_saborizadas (ID_Jugos, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local, Operacion)
 VALUES (NEW.ID_Jugos, NEW.Marcas, NEW.Gustos, NEW.ID_Distribuidor, NEW.Precios, NEW.Fecha_de_vencimientos, NEW.Embase_por_litro, NEW.stock_lote, NEW.ID_local, 'INSERT');
 
+-- el siguiente insert se hace ya con los trigger por eso lo pusimos aca
 INSERT INTO Agua_Saborizadas (ID_Jugos, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local)
 VALUES ('9', 'MarcaX', 'Limón', 1, 150, '2024-12-31', '1.5L', 100, 1);
+
+INSERT INTO gaseosas (ID_Gaseosas, Marcas, Gustos, ID_Distribuidor, Precios, Fecha_de_vencimientos, Embase_por_litro, stock_lote, ID_local)
+VALUES ('14', 'Tai', 'Naranja', 1, 150, '2024-12-31', '1.5L', 100, 1);
+
+
