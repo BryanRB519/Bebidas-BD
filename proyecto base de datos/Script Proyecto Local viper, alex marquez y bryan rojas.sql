@@ -481,3 +481,26 @@ INSERT INTO gaseosas (ID_Gaseosas, Marcas, Gustos, ID_Distribuidor, Precios, Fec
 VALUES ('14', 'Tai', 'Naranja', 1, 150, '2024-12-31', '1.5L', 100, 1);
 
 
+CREATE USER 'tiaviper12345'
+IDENTIFIED BY 'viper.123';
+
+CREATE USER 'cypher123'
+IDENTIFIED BY 'amir.789';
+
+CREATE USER 'jett_revive_me134'
+IDENTIFIED BY 'windwarrior160';
+
+CREATE USER 'macaco_do_fuego456'
+IDENTIFIED BY 'phoenix200';
+
+FLUSH PRIVILEGES;
+
+DROP USER 'jett_revive_me134';
+
+GRANT ALL ON proyecto_bebidas to cypher123; -- todos los permisos sobre toda la bb.dd.
+GRANT ALL ON bebidas_alcohólicas TO 'macaco_do_fuego456'; -- permisos sobre una tabla específica.
+GRANT SELECT, UPDATE ON bebidas_energizante to tiaviper12345; -- permisos limitados sobre una tabla.
+GRANT SELECT ON proyecto_bebidas TO 'jett_revive_me134'; -- permisos de solo lectura en una tabla
+GRANT SELECT ON proyecto_bebidas.* TO 'jett_revive_me134'@'localhost';
+FLUSH PRIVILEGES;
+
