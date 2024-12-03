@@ -1,5 +1,3 @@
-¡Claro! Aquí te dejo un ejemplo de README.md para tu proyecto final llamado "Local de Bebidas" (con el nombre del local como "Viper"), enfocado en bases de datos. He adaptado las secciones y el formato según lo que podría ser un proyecto con este enfoque.
-
 ```markdown
 # Viper - Local de Bebidas
 
