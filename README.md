@@ -58,12 +58,11 @@ Sigue estos pasos para instalar y configurar el proyecto:
    - **MySQL**
 
 2. **Clonación del repositorio**:
-   ```bash
    git clone https://github.com/BryanRB519/Bebidas-BD.git
    ```
 
 
-4. **Configuración de la base de datos**:
+3. **Configuración de la base de datos**:
    - Crea una base de datos en MySQL.
    - usando los comandos create database [usando el nombre de la base de datos]
    - y debemos usar el comando use [usando el nombre de la base de datos]
